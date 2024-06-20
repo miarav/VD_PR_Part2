@@ -1,0 +1,281 @@
+---
+title: "Pràctica (Part 1): Selecció del conjunt de dades"
+author: "Mireia Arnal Avalo"
+date: "Visualització de dades · 06/05/2024"
+toc-title: "Índex"
+output:
+  pdf_document:
+    toc: true
+    number_sections: true
+urlcolor: blue
+---
+
+```{r setup, include = FALSE} 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+\newpage
+
+La temàtica d'estudi és la transformació del [Nivell educatiu a Barcelona](https://opendata-ajuntament.barcelona.cat/data/ca/dataset/pad_mdb_niv-educa-esta_edat-q_sexe) al llarg dels anys segons el districte, barri, edat o sexe del participant. Per tal de fer-ho, s'ha seleccionat 3 datasets del catàleg Open Data BCN (tercer nivell) en un rang de 10 anys entre cadascun:
+
+* `2003_bcn.csv`
+
+* `2013_bcn.csv`
+
+* `2023_bcn.csv`
+
+
+# Justificació
+
+L'educació, des d'una perspectiva social, és un dels pilars fonamentals per al desenvolupament individual i col·lectiu d'una societat. L'anàlisi de la seva evolució és essencial per a comprendre i revelar disparitats i desigualtats que necessiten abordar-se per a la creació d'un entorn més inclusiu per a tothom.
+
+En aquest sentit, Barcelona ofereix factors únics i rics en termes d'origen ètnic, cultural i socioeconòmic. És una ciutat cosmopolita i dinàmica, amb canvis polítics i socials significatius en les últimes dècades. Tot plegat, crea una gran varietat de situacions i reptes que poden ser interessants d'explorar per a la posterior presa de decisions polítiques, la planificació urbana i la implementació d'intervencions educatives de qualitat.
+
+Quant al motiu de selecció d'aquest conjunt de dades, ha estat àmpliament influenciat per causes personals. Pretén, llavors, ser un treball per enriquir el coneixement i fer una posada en pràctica de les competències apreses al llarg de l'assignatura.
+
+
+# Rellevància
+
+Tot i que les dades no són necessàriament actuals, abasten un període de temps valuós que permet investigar tendències i canvis. També cal destacar que és un registre històric amb una freqüència d'actualització anual, de manera que cada setembre s'afegeix les dades de l'any actual. Com que som a maig, encara no hi ha les de 2024 i s'empra les de l'any anterior.
+
+D'altra banda, i com s'ha mencionat anteriorment, analitzar el nivell educatiu de la població té una rellevància significativa en el context social i educatiu, proporcionant informació valuosa sobre els reptes i les oportunitats de millora a futur. Pot ser d'especial interès per a figures polítiques, educadors, famílies, investigadors i altres agents interessats.
+
+A més a més, es dona una especial importància a la perspectiva de gènere perquè sigui una anàlisi completa. La inclusió de dades desglossades per sexe permet identificar possibles disparitats en el nivell d'estudis entre homes i dones.
+
+
+# Complexitat
+
+```{r}
+# Carreguem el conjunt de dades
+bcn03 <- read.csv('2003_bcn.csv', row.names = NULL, stringsAsFactors = TRUE)
+bcn13 <- read.csv('2013_bcn.csv', row.names = NULL, stringsAsFactors = TRUE)
+bcn23 <- read.csv('2023_bcn.csv', row.names = NULL, stringsAsFactors = TRUE)
+```
+
+Primerament, l'arxiu `2003_bcn.csv`:
+
+```{r}
+# Mostrem l'estructura del conjunt de dades
+str(bcn03)
+```
+
+Presenta un total de **13071 observacions** i **9 variables**, les quals són del tipus:
+
+* Quantitatives:
+
+  + Integer: `Codi_Districte`, `Codi_Barri`, `NIV_EDUCA_esta`, `EDAT_Q` i `SEXE`.
+
+* Qualitatives:
+
+  + Factor: `Data_Referencia`, `Nom_Districte`, `Nom_Barri` i `Valor`.
+  
+Com que R (i el mateix dataset) atorga un tipus de variables que no coincideixen amb les reals, es realitzaran els següents canvis:
+
+* `Data_Referencia` passarà a integer i només es deixarà l'any corresponent al nom del fitxer (2003 per `2003_bcn.csv`, 2013 per `2013_bcn.csv` i 2023 per `2023_bcn.csv`).
+
+* `Valor` passarà a integer.
+
+* `NIV_EDUCA_esta` passarà a factor i s'afegirà, en text, el nivell d'estudis.
+
+* `SEXE` seguirà sent integer, però passarà de ser 1 i 2 a 0 i 1, respectivament.
+
+A banda d'aquestes millores, també es realitzarà un canvi en el nom de les variables perquè hi hagi homogeneïtat en l'estil, s'afegirà una nova variable (`id`) i es combinarà els tres fitxers en un.
+
+Després hi ha l'arxiu `2013_bcn.csv`:
+
+```{r}
+# Mostrem l'estructura del conjunt de dades
+str(bcn13)
+```
+
+Presenta un total de **12915 observacions** i **9 variables**, les quals són les mateixes que en el cas anterior.
+
+Per acabar, el fitxer `2023_bcn.csv`:
+
+```{r}
+# Mostrem l'estructura del conjunt de dades
+str(bcn23)
+```
+
+Presenta un total de **11562 observacions** i **9 variables**, les quals són les mateixes que en el primer cas.
+
+---
+
+Amb més d'11000 registres per conjunt de dades, el volum és suficient per proporcionar una mostra representativa de la realitat i dur a terme anàlisis detallades.
+
+Tenim un total de 9 variables simples i estructurades. Per una banda, les dades categòriques del joc de dades descriuen aspectes ordinals (nivell d'estudis) i nominals (nom del districte o barri). Per l'altra, les dades numèriques descriuen quantitats, sempre senceres (edat o valor). També s'inclou un altre tipus de dades, que és la binària (sexe) i la data (any).
+
+En definitiva, l'existència de múltiples variables i la possibilitat de relacionar-les entre si aporta complexitat i la possibilitat d'una investigació en profunditat.
+
+
+# Originalitat
+
+Per tal de donar un enfocament nou o una perspectiva complementària a les dades educatives, es podria afegir dades econòmiques com són la [Renda tributària neta mitjana per llar](https://opendata-ajuntament.barcelona.cat/data/ca/dataset/renda-tributaria-unitat-consum-atlas-distribucio). No obstant això, com que aquestes agafen el rang d'entre l'any 2015 i 2021, no es poden afegir al projecte.
+
+Llavors només queda enriquir el conjunt de dades existent mitjançant la transformació de variables existents per la generació de noves mètriques o indicadors.
+
+Primer, però, es farà els canvis mencionats en l'anterior apartat i es fusionarà tot en un únic dataset.
+
+```{r}
+# Deixem l'any corresponent al fitxer per la variable 'Data_Referencia'
+bcn03$Data_Referencia <- 2003
+bcn13$Data_Referencia <- 2013
+bcn23$Data_Referencia <- 2023
+
+# Combinem els conjunts de dades en un de sol
+bcn_educacio <- rbind(bcn03, bcn13, bcn23)
+
+# Creem una nova variable 'id' com a identificador únic
+bcn_educacio$id <- 1:nrow(bcn_educacio)
+
+# Guardem el dataset combinat en un nou fitxer CSV
+write.csv(bcn_educacio, 'bcn_educacio.csv', row.names = FALSE)
+
+# Mostrem l'estructura del conjunt de dades
+str(bcn_educacio)
+```
+
+Ara queda fer els canvis per cada variable. Es mira que cada columna sigui una variable, cada fila sigui una observació i cada cel·la només tingui un valor.
+
+```{r}
+# Convertim la variable 'Data_Referencia' de double a integer
+bcn_educacio$Data_Referencia <- as.integer(bcn_educacio$Data_Referencia)
+
+# Canviem el nom de la variable 'Data_Referencia' a 'Any'
+names(bcn_educacio)[names(bcn_educacio) == 'Data_Referencia'] <- 'Any'
+
+# Convertim la variable 'Valor' de factor a integer
+bcn_educacio$Valor <- as.integer(bcn_educacio$Valor)
+
+# Reemplaçem el valor '..' per NA a la variable 'Valor'
+bcn_educacio$Valor[bcn_educacio$Valor == '..'] <- NA
+
+# Canviem els valors de la variable 'NIV_EDUCA_esta' i la convertim d'int a factor
+bcn_educacio$NIV_EDUCA_esta <- factor(bcn_educacio$NIV_EDUCA_esta,
+                                     levels = c(1, 2, 3, 4, 5),
+                                     labels = c('Sense estudis', 'Estudis primaris o EGB',
+                                                'ESO o CFGB', 'Batxillerat, BUP, COU o CFGM',
+                                                'Estudis universitaris o CFGS'))
+
+# Canviem el nom de la variable 'NIV_EDUCA_esta' a 'Nivell_Educatiu'
+names(bcn_educacio)[names(bcn_educacio) == 'NIV_EDUCA_esta'] <- 'Nivell_Educatiu'
+
+# Canviem el nom de la variable 'EDAT_Q' a 'Edat'
+names(bcn_educacio)[names(bcn_educacio) == 'EDAT_Q'] <- 'Edat'
+
+# Reemplaçem el valor '1' i '2' per '0' i '1', respectivament, a la variable 'SEXE'
+bcn_educacio$SEXE <- ifelse(bcn_educacio$SEXE == 1, 0, 
+                            ifelse(bcn_educacio$SEXE == 2, 1, bcn_educacio$SEXE))
+
+# Canviem el nom de la variable 'SEXE' a 'Sexe'
+names(bcn_educacio)[names(bcn_educacio) == 'SEXE'] <- 'Sexe'
+
+# Convertim la variable 'Sexe' de numeric a integer
+bcn_educacio$Sexe <- as.integer(bcn_educacio$Sexe)
+
+# Capturem la variable 'id', l'eliminem i l'afegim a la primera posició
+id_column <- bcn_educacio$id
+bcn_educacio <- bcn_educacio[, -which(names(bcn_educacio) == 'id')]
+bcn_educacio <- cbind(id = id_column, bcn_educacio)
+
+# Mostrem l'estructura del conjunt de dades
+str(bcn_educacio)
+```
+
+Després d'haver solucionat els errors de format i duplicats, a continuació es mirarà si hi ha valors atípics (*outliers*) o nuls (*missing*).
+
+```{r}
+# Realitzem una estadísitca descriptiva
+summary(bcn_educacio)
+```
+
+No s'observen valors atípics que no concorden amb la resta de les dades. Sembla, per tant, que és un joc de dades net. El que sí que hi ha són dades no registrades (NA) en la variable `Nivell_Educatiu`.
+
+```{r}
+# Eliminem les dades amb valors nuls
+bcn_educacio <- bcn_educacio[!is.na(bcn_educacio$Nivell_Educatiu),]
+
+# Mostrem l'estructura del conjunt de dades
+str(bcn_educacio)
+```
+
+Ara tenim **34946 observacions**. Com s'ha dit abans, es vol enriquir el joc de dades. Per això, es barrejaran les variables existents per generar nous indicadors. S'estudia les proporcions, sobre 100, de persones per cada combinació de districte i nivell educatiu segons el sexe.
+
+```{r}
+# Creem la taula de contingència
+taula_contingencia <- table(bcn_educacio$Nom_Districte, bcn_educacio$Nivell_Educatiu, bcn_educacio$Sexe)
+
+# Calculem les proporcions per files
+proporcions_per_districte <- prop.table(taula_contingencia, margin = 1) * 100
+proporcions_per_districte
+```
+
+En resum, per aportar originalitat al conjunt de dades, s'ha considerat la creació i exploració de les proporcions d'habitants per cada districte segons el sexe i el nivell educatiu.
+
+Es veuen unes lleugeres diferències entre el tipus d'estudis per cada sexe i districte. Pel cas de les dones (0), la menor proporció sense estudis és al Districte Sarrià-Sant Gervasi (8.29), mentre que la major és a Sants-Montjuïc (9.80). Quant a la proporció més gran amb estudis universitaris o CFGS, torna a ser a Sarrià-Sant Gervasi (10.59), i la menor és a Nou Barris (9.17).
+
+Pel que fa als homes (1), la menor proporció sense estudis és al Districte Sarrià-Sant Gervasi (7.48), mentre que la major és a Sants-Montjuïc (9.27). Quant a la proporció més gran amb estudis universitaris o CFGS, és les Corts (10.38), i la menor és a Nou Barris (8.92).
+
+Amb tot això es pot evidenciar que el districte Sarrià-Sant Gervasi, amb alt valor adquisitiu, presenta el nombre més gros d'individus amb estudis superiors, sent les dones les que tenen un major percentatge en estudis universitaris o CFGS per qualsevol dels deu districtes, exceptuant les Corts.
+
+En la pròxima part de la pràctica, es realitzaran les primeres visualitzacions d'aquestes dades, ja que mai s'ha realitzat un estudi. S'ha pogut enriquir el conjunt de dades ja existent a partir d'una actualització i ajustament de les variables.
+
+
+# Diccionari
+
+El plantejament de les qüestions que es respondran en la visualització de la segona part tindran en compte els punts anteriors per assegurar una perspectiva completa i significativa de les dades. Això implica assegurar que les qüestions són adequades i donen coneixement valuós.
+
+Així doncs, es farà una investigació exhaustiva del nombre d'habitants per cada districte segons el nivell d'estudis i el sexe. A més, es compararà segons siguin registres del 2003, 2013 o 2023, amb l'objectiu de veure un canvi significatiu en les conductes de la població al llarg del temps.
+
+Com el conjunt de dades no ha estat plantejat en altres visualitzacions o projectes, hi ha llibertat total per anar provant diferents tipus de gràfics sense cap mena de problema per repetir estudis.
+
+```{r}
+# Guardem el dataset definitiu en un nou fitxer CSV
+write.csv(bcn_educacio, 'bcn_educacio_v2.csv', row.names = FALSE)
+```
+
+* Variables quantitatives: `id`, `Any`, `Codi_Districte`, `Codi_Barri`, `Valor`, `Edat` i `Sexe`.
+
+* Variables qualitatives: `Nom_Districte`, `Nom_Barri` i `Nivell_Educatiu`.
+
+Creem un diccionari de dades:
+
+* `id`: identificador únic per a cada registre.
+
+**FETS A ESTUDIAR**
+
+* `Valor`: nombre de persones.
+
+* `Nivell_Educatiu`: nivell educatiu (5 nivells).
+
+* `Edat`: edat (17 nivells).
+
+  + 3: 15-19 anys.
+  
+  + 4: 20-24 anys.
+  
+  + ...
+  
+  + 19: 95-99 anys.
+  
+  + 20: > 100 anys.
+
+* `Sexe`: sexe (2 nivells).
+
+  + 0: Dona.
+  
+  + 1: Home.
+
+**DIMENSIÓ GEOGRÀFICA**
+
+* `Codi_Districte`: codi del districte (de l'1 al 10).
+
+* `Nom_Districte`: nom del districte (10 nivells).
+
+* `Codi_Barri`: codi del barri (de l'1 al 73).
+
+* `Nom_Barri`: nom del barri (73 nivells).
+
+**DIMENSIÓ TEMPORAL**
+
+* `Any`: any (2003, 2013 o 2023).
